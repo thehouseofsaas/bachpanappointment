@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { sql } from "drizzle-orm";
-import { Rainbow } from "@/components/art";
+import { Logo } from "@/components/brand";
 import { LoginForm } from "@/components/admin/auth-forms";
 import { AdminLoading, Flash } from "@/components/admin/frame";
 import { getDb } from "@/db/client";
@@ -27,8 +27,8 @@ async function Login({ searchParams }: Pick<PageProps<"/admin/login">, "searchPa
   return (
     <main className="grid min-h-dvh place-items-center bg-wash px-4 py-8">
       <div className="w-full max-w-sm rounded-card border-2 border-line bg-paper p-6 sticker">
-        <div className="mb-2 flex justify-center">
-          <Rainbow size={120} />
+        <div className="mb-4 flex justify-center">
+          <Logo width={180} gap={14} label="Bachpan" priority />
         </div>
         <h1 className="mb-4 text-center text-2xl font-extrabold">PTM office sign-in</h1>
         <Flash ok={sp.ok} error={sp.error} />

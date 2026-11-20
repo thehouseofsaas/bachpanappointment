@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { signOutAdmin } from "@/app/admin/(auth)/actions";
+import { LogoMark } from "@/components/brand";
 import { Notice } from "@/components/ui/bits";
 import type { CurrentAdmin } from "@/lib/authz";
 
@@ -35,8 +36,8 @@ export function AdminFrame({
     <div className="min-h-dvh bg-paper">
       <header className="no-print border-b-2 border-line bg-wash">
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-2">
-          <Link href="/admin" className="font-display text-lg font-extrabold no-underline">
-            <span aria-hidden="true">🌈</span> PTM office
+          <Link href="/admin" className="flex items-center gap-2 font-display text-lg font-extrabold no-underline">
+            <LogoMark width={30} /> PTM office
           </Link>
           <span className="ml-auto text-sm text-muted">{admin.name}</span>
           <form action={signOutAdmin}>

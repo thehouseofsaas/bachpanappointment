@@ -35,10 +35,8 @@ async function Content({ params }: PageProps<"/admin/meetings/[id]/print">) {
       {sessions.map((s, i) => (
         <section key={s.id} className={`bg-white text-black ${i < sessions.length - 1 ? "mb-8 break-after-page" : ""}`}>
           <header className="mb-2 flex items-center gap-3">
-            {settings.logoDataUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element -- small uploaded data: URL
-              <img src={settings.logoDataUrl} alt="" className="size-12 object-contain" />
-            ) : null}
+            {/* eslint-disable-next-line @next/next/no-img-element -- uploaded data: URL or the bundled logo */}
+            <img src={settings.logoDataUrl || "/brand/bachpan-logo.png"} alt="" className="h-14 w-auto object-contain" />
             <div>
               <p className="text-sm">{settings.schoolName}</p>
               <h2 className="text-xl font-extrabold">

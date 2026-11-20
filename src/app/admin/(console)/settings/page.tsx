@@ -84,9 +84,9 @@ async function Settings({ searchParams }: Pick<PageProps<"/admin/settings">, "se
             </div>
             <div>
               <label htmlFor="schoolPlace" className={adminLabel}>
-                Place
+                Line under the logo
               </label>
-              <input id="schoolPlace" name="schoolPlace" maxLength={80} defaultValue={settings.schoolPlace} className={adminInput} />
+              <input id="schoolPlace" name="schoolPlace" maxLength={80} placeholder="Play School · Rajpura" defaultValue={settings.schoolPlace} className={adminInput} />
             </div>
             <div>
               <label htmlFor="officePhone" className={adminLabel}>

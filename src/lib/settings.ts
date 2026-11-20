@@ -4,6 +4,7 @@ import { settings } from "@/db/schema";
 
 export type AppSettings = {
   schoolName: string;
+  /** Short line shown under the logo, e.g. "Play School · Rajpura". */
   schoolPlace: string;
   /** Office phone in E.164 (shown as tap-to-call and WhatsApp). */
   officePhone: string;
@@ -19,7 +20,7 @@ export type AppSettings = {
 
 export const DEFAULT_SETTINGS: AppSettings = {
   schoolName: "Bachpan Play School",
-  schoolPlace: "Rajpura",
+  schoolPlace: "Play School · Rajpura",
   officePhone: "",
   logoDataUrl: "",
   requireAdmissionNo: false,

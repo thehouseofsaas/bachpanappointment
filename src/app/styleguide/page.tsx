@@ -9,7 +9,6 @@ import {
   Kite,
   OopsArt,
   Rainbow,
-  RainbowHeader,
   SearchingArt,
   SleepingSunArt,
   Star,
@@ -18,6 +17,7 @@ import {
   WavingCloudArt,
   WavyDivider,
 } from "@/components/art";
+import { BrandHeader } from "@/components/parent/brand-header";
 import { ChildCard } from "@/components/parent/child-card";
 import { Card, Field, inputClass, Notice, Pill } from "@/components/ui/bits";
 import { Button } from "@/components/ui/button";
@@ -46,16 +46,19 @@ export default function Styleguide() {
   };
   return (
     <div className="bg-cream">
-      <div className="bg-wash">
-        <div className="mx-auto max-w-md">
-          <RainbowHeader className="block" />
-        </div>
-      </div>
+      <BrandHeader schoolName="Bachpan Play School" tagline="Play School · Rajpura" />
       <main className="mx-auto max-w-md space-y-8 px-4 py-6">
         <header>
           <h1 className="text-4xl font-extrabold">Styleguide</h1>
           <p className="text-muted">The pre-school theme: colours, type, shapes and the parent screens with sample data.</p>
         </header>
+
+        <section className="space-y-3">
+          <h2 className="text-2xl font-extrabold">Compact header (bookings page)</h2>
+          <div className="overflow-hidden rounded-card border-2 border-line">
+            <BrandHeader schoolName="Bachpan Play School" tagline="Play School · Rajpura" compact />
+          </div>
+        </section>
 
         <section className="space-y-3">
           <h2 className="text-2xl font-extrabold">Colours</h2>
