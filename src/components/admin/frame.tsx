@@ -32,28 +32,30 @@ export function AdminFrame({
   actions?: ReactNode;
   children: ReactNode;
 }) {
+  const currentLabel = NAV.find(([href]) => href === current)?.[1] ?? title;
   return (
     <div className="min-h-dvh bg-paper">
-      <header className="no-print border-b-2 border-line bg-wash">
-        <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-2">
-          <Link href="/admin" className="flex items-center gap-2 font-display text-lg font-extrabold no-underline">
+      <header className="no-print safe-top border-b-2 border-line bg-wash">
+        <div className="safe-x mx-auto flex max-w-5xl items-center gap-2 py-1.5">
+          <Link href="/admin" className="flex min-h-11 items-center gap-2 font-display text-lg font-extrabold no-underline">
             <LogoMark width={30} /> PTM office
           </Link>
-          <span className="ml-auto text-sm text-muted">{admin.name}</span>
-          <form action={signOutAdmin}>
-            <button type="submit" className="cursor-pointer text-sm font-bold underline underline-offset-4">
+          <span className="ml-auto hidden truncate text-sm text-muted sm:inline">{admin.name}</span>
+          <form action={signOutAdmin} className="ml-auto sm:ml-0">
+            <button type="submit" className="min-h-11 cursor-pointer px-2 text-sm font-bold underline underline-offset-4">
               Sign out
             </button>
           </form>
         </div>
-        <nav aria-label="Admin" className="mx-auto max-w-5xl overflow-x-auto px-2">
+        {/* Wide screens: tabs. */}
+        <nav aria-label="Admin" className="safe-x mx-auto hidden max-w-5xl md:block">
           <ul className="flex gap-1 whitespace-nowrap">
             {NAV.map(([href, label]) => (
               <li key={href}>
                 <Link
                   href={href}
                   aria-current={current === href ? "page" : undefined}
-                  className={`block rounded-t-xl px-3 py-2 text-sm font-bold no-underline ${
+                  className={`block rounded-t-xl px-3 py-2.5 text-sm font-bold no-underline ${
                     current === href ? "bg-paper text-navy" : "text-muted hover:text-navy"
                   }`}
                 >
@@ -63,17 +65,46 @@ export function AdminFrame({
             ))}
           </ul>
         </nav>
+        {/* Phones and small tablets: one menu button. Keyed by page so it closes after navigating. */}
+        <details key={current} className="group md:hidden">
+          <summary className="safe-x flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 border-t-2 border-line bg-paper font-bold [&::-webkit-details-marker]:hidden">
+            <span className="truncate">{currentLabel}</span>
+            <span className="flex shrink-0 items-center gap-1.5 text-sm text-muted">
+              Menu
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" className="transition-transform group-open:rotate-180">
+                <path d="M3.5 6l4.5 4.5L12.5 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </summary>
+          <nav aria-label="Admin" className="safe-x bg-paper pb-2">
+            <ul className="grid gap-1 sm:grid-cols-2">
+              {NAV.map(([href, label]) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    aria-current={current === href ? "page" : undefined}
+                    className={`flex min-h-12 items-center rounded-xl px-3 font-bold no-underline ${
+                      current === href ? "bg-sky-soft text-sky-ink" : "text-navy"
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </details>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-5">
+      <main className="safe-x safe-bottom mx-auto max-w-5xl pt-5">
         {back ? (
           <p className="no-print mb-1 text-sm">
-            <Link href={back.href} className="font-bold text-muted">
+            <Link href={back.href} className="inline-flex min-h-10 items-center font-bold text-muted">
               ← {back.label}
             </Link>
           </p>
         ) : null}
         <div className="mb-4 flex flex-wrap items-center gap-3">
-          <h1 className="text-3xl font-extrabold">{title}</h1>
+          <h1 className="min-w-0 text-2xl font-extrabold break-words sm:text-3xl">{title}</h1>
           {actions ? <div className="no-print ml-auto flex flex-wrap gap-2">{actions}</div> : null}
         </div>
         {children}

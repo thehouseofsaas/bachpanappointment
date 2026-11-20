@@ -30,7 +30,7 @@ export default function Page({ params }: PageProps<"/t/[link]">) {
 
 function Invalid() {
   return (
-    <main className="grid min-h-dvh place-items-center bg-cream px-4">
+    <main className="safe-x grid min-h-dvh place-items-center bg-cream">
       <Card className="max-w-sm text-center">
         <div className="flex justify-center">
           <OopsArt size={140} />
@@ -56,8 +56,8 @@ async function Schedule({ params }: Pick<PageProps<"/t/[link]">, "params">) {
 
   return (
     <div className="min-h-dvh bg-cream">
-      <header className="no-print bg-wash">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
+      <header className="no-print safe-top bg-wash">
+        <div className="safe-x mx-auto flex max-w-2xl items-center gap-3 py-3">
           <LogoMark width={56} />
           <div className="min-w-0">
             <p className="text-sm text-muted">{settings.schoolName}</p>
@@ -68,7 +68,7 @@ async function Schedule({ params }: Pick<PageProps<"/t/[link]">, "params">) {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-2xl space-y-5 px-4 py-5">
+      <main className="safe-x safe-bottom mx-auto max-w-2xl space-y-5 pt-5">
         <p className="no-print text-sm text-muted">
           🔒 This is your private page. Please don&apos;t forward the link. All times are India time.
         </p>
@@ -150,7 +150,7 @@ function SessionCard({ s, link, teacherName }: { s: TeacherSession; link: string
 
       {!s.cancelled && s.notBooked.length > 0 ? (
         <details className="mt-3 rounded-2xl border-2 border-line bg-paper p-3">
-          <summary className="cursor-pointer font-bold">Not booked yet ({s.notBooked.length})</summary>
+          <summary className="flex min-h-11 cursor-pointer items-center font-bold">Not booked yet ({s.notBooked.length})</summary>
           <p className="mt-2">{s.notBooked.map((n) => n.name).join(", ")}</p>
         </details>
       ) : null}

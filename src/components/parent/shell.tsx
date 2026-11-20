@@ -23,9 +23,9 @@ export function ParentShell({
       </div>
       <BrandHeader schoolName={settings.schoolName} tagline={settings.schoolPlace} compact={compact} />
 
-      <main className="relative mx-auto w-full max-w-md flex-1 px-4 pt-5 pb-8">{children}</main>
+      <main className="safe-x relative mx-auto w-full max-w-md flex-1 pt-5 pb-8">{children}</main>
 
-      <footer className="relative mx-auto w-full max-w-md px-4 pb-8 text-center">
+      <footer className="safe-x safe-bottom relative mx-auto w-full max-w-md text-center">
         <WavyDivider className="mb-4" />
         {settings.officePhone ? (
           <div className="mb-3 flex flex-wrap justify-center gap-2">

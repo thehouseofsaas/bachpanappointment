@@ -12,7 +12,7 @@ const label = "mb-1 block text-sm font-bold";
 export function LoginForm() {
   const [state, action, pending] = useActionState<AuthState, FormData>(signInAdmin, {});
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="space-y-4" data-keep-visible>
       {state.error ? (
         <Notice kind="bad" role="alert">
           {state.error}
@@ -28,7 +28,7 @@ export function LoginForm() {
         <label htmlFor="password" className={label}>
           Password
         </label>
-        <input id="password" name="password" type="password" autoComplete="current-password" required className={input} />
+        <input id="password" name="password" type="password" autoComplete="current-password" enterKeyHint="go" required className={input} />
       </div>
       <SubmitButton full pending={pending}>
         Sign in
@@ -40,7 +40,7 @@ export function LoginForm() {
 export function SetupForm() {
   const [state, action, pending] = useActionState<AuthState, FormData>(setupOwner, {});
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="space-y-4" data-keep-visible>
       {state.error ? (
         <Notice kind="bad" role="alert">
           {state.error}

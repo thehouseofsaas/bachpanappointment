@@ -99,6 +99,14 @@ pnpm admin:create office "a-new-long-password"
 5. Send each teacher their private schedule link (meeting page → Teacher tools), or print the sheets.
 6. If plans change: block a slot, change a teacher's timings, hand a session to a substitute, postpone, or cancel. Anything that would cancel a parent's booking shows exactly who is affected and asks first.
 
+## Phones, tablets and computers
+
+- Every page, including the office console, is laid out for phones first and checked automatically on 11 screen sizes: from a folded Galaxy Fold (280 px) and small iPhones up to tablets, laptops and large desktops, plus phones held sideways and 130% system text.
+- Text fields stay visible above the on-screen keyboard (with their button, on the sign-in forms). On Android the page shrinks for the keyboard; on iPhone the page scrolls the field into view.
+- Form fields use 16 px text so iPhones don't zoom in when you tap them; pinch-zoom is never disabled.
+- Notched phones are handled (content stays clear of the camera cut-out and rounded corners).
+- On a phone the office console has a single Menu button instead of tabs, tables turn into one card per row, and each teacher's free times are a grid of tappable times.
+
 ## Good to know
 
 - **Sign-in is by phone number only.** Everyone in a class WhatsApp group can see everyone's number, so a parent could open another family's booking. Parents only ever see a first name, class, teacher and time; each child's booking can be changed three times; the card shows which number last changed it; the office can lock a booking; everything is in the activity log. For a second check, turn on *Settings → ask for the admission number*.

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { sql } from "drizzle-orm";
 import { CopyField } from "@/components/admin/copy-field";
-import { adminInput, adminLabel, AdminFrame, AdminLoading, Flash, Panel, td, th } from "@/components/admin/frame";
+import { adminInput, adminLabel, AdminFrame, AdminLoading, Flash, Panel } from "@/components/admin/frame";
 import { PHASE_TONE } from "@/components/admin/phase";
 import { Notice, Pill } from "@/components/ui/bits";
 import { Button, LinkButton } from "@/components/ui/button";
@@ -48,7 +48,7 @@ export default function Page(props: PageProps<"/admin/meetings/[id]">) {
 }
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
-const smallBtn = "min-h-9 cursor-pointer rounded-lg border-2 border-line bg-paper px-2.5 text-sm font-bold";
+const smallBtn = "min-h-10 cursor-pointer rounded-lg border-2 border-line bg-paper px-3 text-sm font-bold";
 
 async function Content({ params, searchParams }: PageProps<"/admin/meetings/[id]">) {
   const admin = await requireAdmin();
@@ -74,10 +74,9 @@ async function Content({ params, searchParams }: PageProps<"/admin/meetings/[id]
   const rebook = (child: string) =>
     `Dear parent, ${child.split(" ")[0]}'s earlier ${m.title} time had to be cancelled by ${settings.schoolName}. Please pick a new time (${day}):\n${parentLink}`;
 
-  const bookSlotId = one(sp.book);
-  const moveBookingId = one(sp.move);
-  const bookTarget = bookSlotId ? findSlot(m, bookSlotId) : null;
-  const moveTarget = moveBookingId ? findBooking(m, moveBookingId) : null;
+  // ?slot=<id> opens the book/block panel for a free or blocked time; ?move=<bookingId> the move panel.
+  const selectedSlotId = one(sp.slot) ?? one(sp.book) ?? null;
+  const moveBookingId = one(sp.move) ?? null;
 
   return (
     <AdminFrame
@@ -147,68 +146,6 @@ async function Content({ params, searchParams }: PageProps<"/admin/meetings/[id]
         ) : null}
       </Panel>
 
-      {bookTarget && !bookTarget.slot.booking ? (
-        <Panel title={`Book ${formatTime(bookTarget.slot.startsAt)} with ${bookTarget.session.teacherName}`} className="mb-4 border-sunshine-deep!">
-          {bookTarget.session.unbooked.length === 0 ? (
-            <p>Every child in this teacher&apos;s classes already has a time.</p>
-          ) : (
-            <form action={adminBookAction} className="flex flex-wrap items-end gap-3">
-              <input type="hidden" name="meetingId" value={m.id} />
-              <input type="hidden" name="slotId" value={bookTarget.slot.id} />
-              <div className="min-w-56 flex-1">
-                <label htmlFor="studentId" className={adminLabel}>
-                  Child
-                </label>
-                <select id="studentId" name="studentId" required className={adminInput} defaultValue="">
-                  <option value="" disabled>
-                    Choose a child…
-                  </option>
-                  {bookTarget.session.unbooked.map((u) => (
-                    <option key={u.studentId} value={u.studentId}>
-                      {u.name} ({u.classLabel})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <SubmitButton>Book this time</SubmitButton>
-              <Link href={`/admin/meetings/${m.id}`} className="font-bold">
-                Never mind
-              </Link>
-            </form>
-          )}
-        </Panel>
-      ) : null}
-
-      {moveTarget ? (
-        <Panel title={`Move ${moveTarget.slot.booking!.studentName} (now ${formatTime(moveTarget.slot.startsAt)})`} className="mb-4 border-sunshine-deep!">
-          <form action={adminMoveAction} className="flex flex-wrap items-end gap-3">
-            <input type="hidden" name="meetingId" value={m.id} />
-            <input type="hidden" name="bookingId" value={moveTarget.slot.booking!.id} />
-            <div className="min-w-56 flex-1">
-              <label htmlFor="slotId" className={adminLabel}>
-                New time with {moveTarget.session.teacherName}
-              </label>
-              <select id="slotId" name="slotId" required className={adminInput} defaultValue="">
-                <option value="" disabled>
-                  Choose a free time…
-                </option>
-                {moveTarget.session.slots
-                  .filter((s) => s.state === "open" && !s.booking)
-                  .map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {formatTime(s.startsAt)}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            <SubmitButton>Move</SubmitButton>
-            <Link href={`/admin/meetings/${m.id}`} className="font-bold">
-              Never mind
-            </Link>
-          </form>
-        </Panel>
-      ) : null}
-
       {live ? (
         <Panel title="Tell parents" className="mb-4">
           <div className="grid gap-4 md:grid-cols-2">
@@ -228,6 +165,8 @@ async function Content({ params, searchParams }: PageProps<"/admin/meetings/[id]
             teachers={teachers.rows}
             reminder={reminder}
             rebook={rebook}
+            selectedSlotId={selectedSlotId}
+            moveBookingId={moveBookingId}
           />
         ))}
       </div>
@@ -289,22 +228,6 @@ function DuplicateForm({ meetingId }: { meetingId: string }) {
   );
 }
 
-function findSlot(m: MeetingDetail, slotId: string) {
-  for (const session of m.sessions) {
-    const slot = session.slots.find((x) => x.id === slotId);
-    if (slot) return { session, slot };
-  }
-  return null;
-}
-
-function findBooking(m: MeetingDetail, bookingId: string) {
-  for (const session of m.sessions) {
-    const slot = session.slots.find((x) => x.booking?.id === bookingId);
-    if (slot) return { session, slot };
-  }
-  return null;
-}
-
 function SessionPanel({
   m,
   s,
@@ -312,6 +235,8 @@ function SessionPanel({
   teachers,
   reminder,
   rebook,
+  selectedSlotId,
+  moveBookingId,
 }: {
   m: MeetingDetail;
   s: SessionDetail;
@@ -319,6 +244,8 @@ function SessionPanel({
   teachers: Array<{ id: string; name: string }>;
   reminder: (child: string) => string;
   rebook: (child: string) => string;
+  selectedSlotId: string | null;
+  moveBookingId: string | null;
 }) {
   const start = istParts(s.startsAt);
   const end = istParts(s.endsAt);
@@ -371,106 +298,19 @@ function SessionPanel({
       ) : null}
 
       {s.active ? (
-        <div className="mt-3 overflow-x-auto">
-          <table className="w-full min-w-[30rem] border-collapse">
-            <thead>
-              <tr className="border-b-2 border-line">
-                <th className={th}>Time</th>
-                <th className={th}>Child</th>
-                <th className={`${th} no-print`}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {s.slots.map((slot) => (
-                <tr key={slot.id} id={`slot-${slot.id}`} className="border-b border-line">
-                  <td className={`${td} whitespace-nowrap font-bold`}>{formatTime(slot.startsAt)}</td>
-                  <td className={td}>
-                    {slot.booking ? (
-                      <>
-                        <Link href={`/admin/roster/${slot.booking.studentId}`} className="font-bold">
-                          {slot.booking.studentName}
-                        </Link>{" "}
-                        <span className="text-muted">
-                          ({slot.booking.classLabel}) · ref {slot.booking.refCode}
-                          {slot.booking.source === "admin" ? " · booked by office" : ""}
-                          {slot.booking.locked ? " · 🔒 locked" : ""}
-                          {slot.booking.attendance === "attended" ? " · ✓ attended" : ""}
-                          {slot.booking.attendance === "no_show" ? " · ✗ did not come" : ""}
-                        </span>
-                        <br />
-                        <span className="text-sm text-muted">{slot.booking.phones.map(formatPhone).join(", ") || "no phone"}</span>
-                      </>
-                    ) : slot.state === "blocked" ? (
-                      <span className="text-muted">Blocked (break or not available)</span>
-                    ) : (
-                      <span className="text-leaf-ink">Free</span>
-                    )}
-                  </td>
-                  <td className={`${td} no-print`}>
-                    {editable ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        {slot.booking ? (
-                          live ? (
-                            <>
-                              <Link href={`/admin/meetings/${m.id}?move=${slot.booking.id}`} className={`${smallBtn} inline-flex items-center no-underline`}>
-                                Move
-                              </Link>
-                              <form action={adminCancelBookingAction}>
-                                <input type="hidden" name="meetingId" value={m.id} />
-                                <input type="hidden" name="bookingId" value={slot.booking.id} />
-                                <button type="submit" className={`${smallBtn} text-coral-ink`}>
-                                  Cancel
-                                </button>
-                              </form>
-                              <form action={lockBookingAction}>
-                                <input type="hidden" name="meetingId" value={m.id} />
-                                <input type="hidden" name="bookingId" value={slot.booking.id} />
-                                <input type="hidden" name="locked" value={slot.booking.locked ? "0" : "1"} />
-                                <button type="submit" className={smallBtn}>
-                                  {slot.booking.locked ? "Unlock" : "Lock"}
-                                </button>
-                              </form>
-                            </>
-                          ) : null
-                        ) : slot.state === "open" ? (
-                          <>
-                            {live ? (
-                              <Link href={`/admin/meetings/${m.id}?book=${slot.id}`} className={`${smallBtn} inline-flex items-center no-underline`}>
-                                Book for a child
-                              </Link>
-                            ) : null}
-                            <form action={blockSlotAction}>
-                              <input type="hidden" name="meetingId" value={m.id} />
-                              <input type="hidden" name="slotId" value={slot.id} />
-                              <input type="hidden" name="blocked" value="1" />
-                              <button type="submit" className={smallBtn}>
-                                Block
-                              </button>
-                            </form>
-                          </>
-                        ) : (
-                          <form action={blockSlotAction}>
-                            <input type="hidden" name="meetingId" value={m.id} />
-                            <input type="hidden" name="slotId" value={slot.id} />
-                            <input type="hidden" name="blocked" value="0" />
-                            <button type="submit" className={smallBtn}>
-                              Re-open
-                            </button>
-                          </form>
-                        )}
-                      </div>
-                    ) : null}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <SlotList
+          m={m}
+          s={s}
+          editable={editable}
+          live={live}
+          selectedSlotId={selectedSlotId}
+          moveBookingId={moveBookingId}
+        />
       ) : null}
 
       {s.active && live && s.unbooked.length > 0 ? (
         <details className="mt-3 rounded-xl border-2 border-line p-3" open={s.unbooked.some((u) => u.needsRebooking)}>
-          <summary className="cursor-pointer font-bold">
+          <summary className="flex min-h-11 cursor-pointer flex-wrap items-center gap-x-1 font-bold">
             Not booked yet: {s.unbooked.length}
             {s.unbooked.some((u) => u.needsRebooking) ? " · some need a new time" : ""}
           </summary>
@@ -504,7 +344,7 @@ function SessionPanel({
 
       {editable ? (
         <details className="no-print mt-3 rounded-xl border-2 border-line p-3">
-          <summary className="cursor-pointer font-bold">Teacher tools: timings, substitute, schedule link</summary>
+          <summary className="flex min-h-11 cursor-pointer flex-wrap items-center gap-x-1 font-bold">Teacher tools: timings, substitute, schedule link</summary>
           <div className="mt-3 grid gap-6 lg:grid-cols-2">
             {s.active ? (
               <form action={updateSessionAction} className="space-y-2">
@@ -600,4 +440,240 @@ function formatClock(min: number): string {
   const suffix = h >= 12 ? "pm" : "am";
   const h12 = h % 12 === 0 ? 12 : h % 12;
   return `${h12}:${String(m).padStart(2, "0")} ${suffix}`;
+}
+
+/** Booked times as a list (one row each, wraps on phones); free and blocked times as tappable chips. */
+function SlotList({
+  m,
+  s,
+  editable,
+  live,
+  selectedSlotId,
+  moveBookingId,
+}: {
+  m: MeetingDetail;
+  s: SessionDetail;
+  editable: boolean;
+  live: boolean;
+  selectedSlotId: string | null;
+  moveBookingId: string | null;
+}) {
+  const booked = s.slots.filter((x) => x.booking);
+  const others = s.slots.filter((x) => !x.booking);
+  const freeCount = others.filter((x) => x.state === "open").length;
+  const selected = others.find((x) => x.id === selectedSlotId) ?? null;
+  const home = `/admin/meetings/${m.id}`;
+  const freeSlots = s.slots.filter((x) => x.state === "open" && !x.booking);
+
+  return (
+    <div className="mt-3 space-y-4">
+      <section aria-label={`Booked times with ${s.teacherName}`}>
+        <h3 className="text-xs font-bold tracking-wide text-muted uppercase">Booked ({booked.length})</h3>
+        {booked.length === 0 ? (
+          <p className="mt-1 text-muted">No bookings yet.</p>
+        ) : (
+          <ul className="mt-1 divide-y divide-line">
+            {booked.map((slot) => {
+              const b = slot.booking!;
+              const moving = moveBookingId === b.id;
+              return (
+                <li key={slot.id} id={`slot-${slot.id}`} className="scroll-mt-24 py-2.5">
+                  <div className="flex flex-wrap items-start gap-x-3 gap-y-2">
+                    <span className="w-[4.75rem] shrink-0 font-display text-lg leading-6 font-extrabold">{formatTime(slot.startsAt)}</span>
+                    <div className="min-w-0 flex-1 basis-44">
+                      <p className="leading-6">
+                        <Link href={`/admin/roster/${b.studentId}`} className="font-bold break-words">
+                          {b.studentName}
+                        </Link>{" "}
+                        <span className="text-muted">({b.classLabel})</span>
+                      </p>
+                      <p className="text-sm text-muted">
+                        ref {b.refCode}
+                        {b.source === "admin" ? " · booked by office" : ""}
+                        {b.locked ? " · 🔒 locked" : ""}
+                        {b.attendance === "attended" ? " · ✓ came" : ""}
+                        {b.attendance === "no_show" ? " · ✗ did not come" : ""}
+                      </p>
+                      <p className="text-sm">
+                        {b.phones.length === 0
+                          ? "no phone"
+                          : b.phones.map((p, i) => (
+                              <span key={p}>
+                                {i > 0 ? ", " : ""}
+                                <a href={`tel:${p}`} className="whitespace-nowrap">
+                                  {formatPhone(p)}
+                                </a>
+                              </span>
+                            ))}
+                      </p>
+                    </div>
+                    {editable && live ? (
+                      <div className="no-print flex w-full flex-wrap gap-1.5 sm:w-auto">
+                        <Link
+                          href={moving ? home : `${home}?move=${b.id}#slot-${slot.id}`}
+                          scroll={false}
+                          aria-expanded={moving}
+                          className={`${smallBtn} inline-flex items-center no-underline`}
+                        >
+                          {moving ? "Close" : "Move"}
+                        </Link>
+                        <form action={adminCancelBookingAction}>
+                          <input type="hidden" name="meetingId" value={m.id} />
+                          <input type="hidden" name="bookingId" value={b.id} />
+                          <button type="submit" className={`${smallBtn} text-coral-ink`}>
+                            Cancel
+                          </button>
+                        </form>
+                        <form action={lockBookingAction}>
+                          <input type="hidden" name="meetingId" value={m.id} />
+                          <input type="hidden" name="bookingId" value={b.id} />
+                          <input type="hidden" name="locked" value={b.locked ? "0" : "1"} />
+                          <button type="submit" className={smallBtn}>
+                            {b.locked ? "Unlock" : "Lock"}
+                          </button>
+                        </form>
+                      </div>
+                    ) : null}
+                  </div>
+                  {moving ? (
+                    <form action={adminMoveAction} className="no-print mt-2 rounded-xl border-2 border-sunshine-deep bg-sunshine-soft p-3" data-keep-visible>
+                      <input type="hidden" name="meetingId" value={m.id} />
+                      <input type="hidden" name="bookingId" value={b.id} />
+                      <label htmlFor={`move-${b.id}`} className={adminLabel}>
+                        Move {b.studentName} to
+                      </label>
+                      {freeSlots.length === 0 ? (
+                        <p>There are no free times with this teacher.</p>
+                      ) : (
+                        <div className="flex flex-wrap items-end gap-2">
+                          <select id={`move-${b.id}`} name="slotId" required defaultValue="" className={`${adminInput} min-w-40 flex-1`}>
+                            <option value="" disabled>
+                              Choose a free time…
+                            </option>
+                            {freeSlots.map((x) => (
+                              <option key={x.id} value={x.id}>
+                                {formatTime(x.startsAt)}
+                              </option>
+                            ))}
+                          </select>
+                          <SubmitButton size="sm">Move</SubmitButton>
+                        </div>
+                      )}
+                    </form>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      {others.length > 0 ? (
+        <section aria-label={`Free times with ${s.teacherName}`}>
+          <h3 className="text-xs font-bold tracking-wide text-muted uppercase">
+            Free ({freeCount}){others.length > freeCount ? ` · blocked (${others.length - freeCount})` : ""}
+            {editable ? <span className="font-normal tracking-normal normal-case"> — tap a time to book or block it</span> : null}
+          </h3>
+          <ul className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(5.5rem,1fr))] gap-2">
+            {others.map((slot) => {
+              const open = slot.state === "open";
+              const isSel = selected?.id === slot.id;
+              const label = `${formatTime(slot.startsAt)}: ${open ? "free" : "blocked"}${editable ? (open ? " — book or block" : " — re-open") : ""}`;
+              const cls = `flex min-h-11 w-full flex-col items-center justify-center rounded-xl border-2 px-1 text-center font-bold no-underline ${
+                isSel
+                  ? "border-sunshine-deep bg-sunshine text-navy"
+                  : open
+                    ? "border-leaf bg-leaf-soft text-leaf-ink"
+                    : "border-dashed border-line bg-paper text-muted"
+              }`;
+              return (
+                <li key={slot.id}>
+                  {editable ? (
+                    <Link
+                      href={isSel ? home : `${home}?slot=${slot.id}#act-${s.id}`}
+                      scroll={false}
+                      aria-label={label}
+                      aria-current={isSel ? "true" : undefined}
+                      className={cls}
+                    >
+                      <span className="leading-tight">{formatTime(slot.startsAt)}</span>
+                      {open ? null : <span className="text-[0.7rem] leading-tight font-semibold">blocked</span>}
+                    </Link>
+                  ) : (
+                    <span aria-label={label} className={cls}>
+                      <span className="leading-tight">{formatTime(slot.startsAt)}</span>
+                      {open ? null : <span className="text-[0.7rem] leading-tight font-semibold">blocked</span>}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+
+          {selected ? (
+            <div id={`act-${s.id}`} className="no-print mt-3 scroll-mt-24 rounded-xl border-2 border-sunshine-deep bg-sunshine-soft p-3">
+              <p className="font-display text-lg font-extrabold">
+                {formatTime(selected.startsAt)} with {s.teacherName}
+              </p>
+              {selected.state === "open" ? (
+                <>
+                  {live ? (
+                    s.unbooked.length === 0 ? (
+                      <p className="mt-1">Every child in this teacher&apos;s classes already has a time.</p>
+                    ) : (
+                      <form action={adminBookAction} className="mt-2" data-keep-visible>
+                        <input type="hidden" name="meetingId" value={m.id} />
+                        <input type="hidden" name="slotId" value={selected.id} />
+                        <label htmlFor={`child-${s.id}`} className={adminLabel}>
+                          Book for a child
+                        </label>
+                        <div className="flex flex-wrap items-end gap-2">
+                          <select id={`child-${s.id}`} name="studentId" required defaultValue="" className={`${adminInput} min-w-48 flex-1`}>
+                            <option value="" disabled>
+                              Choose a child…
+                            </option>
+                            {s.unbooked.map((u) => (
+                              <option key={u.studentId} value={u.studentId}>
+                                {u.name} ({u.classLabel})
+                              </option>
+                            ))}
+                          </select>
+                          <SubmitButton size="sm">Book this time</SubmitButton>
+                        </div>
+                      </form>
+                    )
+                  ) : (
+                    <p className="mt-1 text-sm text-muted">Publish the meeting to book for parents.</p>
+                  )}
+                  <form action={blockSlotAction} className="mt-3">
+                    <input type="hidden" name="meetingId" value={m.id} />
+                    <input type="hidden" name="slotId" value={selected.id} />
+                    <input type="hidden" name="blocked" value="1" />
+                    <button type="submit" className={smallBtn}>
+                      Block this time (break or not available)
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <form action={blockSlotAction} className="mt-2">
+                  <input type="hidden" name="meetingId" value={m.id} />
+                  <input type="hidden" name="slotId" value={selected.id} />
+                  <input type="hidden" name="blocked" value="0" />
+                  <p className="mb-2 text-sm">This time is blocked, so parents cannot book it.</p>
+                  <button type="submit" className={smallBtn}>
+                    Re-open this time
+                  </button>
+                </form>
+              )}
+              <p className="mt-2">
+                <Link href={home} scroll={false} className="inline-flex min-h-10 items-center font-bold">
+                  Close
+                </Link>
+              </p>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+    </div>
+  );
 }

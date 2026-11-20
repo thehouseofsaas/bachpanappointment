@@ -104,7 +104,7 @@ async function Upload({ searchParams }: Pick<PageProps<"/admin/roster/import">, 
           <p className="text-muted">No uploads yet.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-sm">
+            <table className="stack-table w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b-2 border-line">
                   <th className={th}>When</th>
@@ -125,17 +125,17 @@ async function Upload({ searchParams }: Pick<PageProps<"/admin/roster/import">, 
                     );
                   return (
                     <tr key={i.id} className="border-b border-line last:border-0">
-                      <td className={`${td} w-24 sm:w-auto sm:whitespace-nowrap`}>
+                      <td data-label="When" className={`${td} sm:whitespace-nowrap`}>
                         {formatDayTime(new Date(i.created_at))}
                         {i.by ? <div className="text-muted">{i.by}</div> : null}
                       </td>
-                      <td className={`${td} max-w-64 break-words`}>
+                      <td className={`${td} break-words sm:max-w-64`}>
                         <Link href={`/admin/roster/import/${i.id}`} className="font-bold">
                           {i.filename}
                         </Link>
                         <div className="mt-1 sm:hidden">{result}</div>
                       </td>
-                      <td className={td}>
+                      <td data-label="Status" className={td}>
                         <Pill tone={STATUS[i.status]?.tone} className="whitespace-nowrap">
                           {STATUS[i.status]?.text ?? i.status}
                         </Pill>

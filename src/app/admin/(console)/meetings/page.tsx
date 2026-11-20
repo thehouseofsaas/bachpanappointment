@@ -34,7 +34,7 @@ async function Content({ searchParams }: Pick<PageProps<"/admin/meetings">, "sea
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[34rem] border-collapse">
+            <table className="stack-table w-full border-collapse">
               <thead>
                 <tr className="border-b-2 border-line">
                   <th className={th}>Date</th>
@@ -46,16 +46,16 @@ async function Content({ searchParams }: Pick<PageProps<"/admin/meetings">, "sea
               <tbody>
                 {meetings.map((m) => (
                   <tr key={m.id} className="border-b border-line">
-                    <td className={`${td} whitespace-nowrap font-bold`}>{formatDate(m.date, "short")}</td>
+                    <td data-label="Date" className={`${td} whitespace-nowrap font-bold`}>{formatDate(m.date, "short")}</td>
                     <td className={td}>
-                      <Link href={`/admin/meetings/${m.id}`} className="font-bold">
+                      <Link href={`/admin/meetings/${m.id}`} className="inline-flex min-h-10 items-center font-bold">
                         {m.title}
                       </Link>
                     </td>
-                    <td className={td}>
+                    <td data-label="Status" className={td}>
                       <Pill tone={PHASE_TONE[m.phase]}>{PHASE_LABEL[m.phase]}</Pill>
                     </td>
-                    <td className={`${td} whitespace-nowrap`}>
+                    <td data-label="Booked" className={`${td} whitespace-nowrap`}>
                       {m.booked} of {m.children} children
                     </td>
                   </tr>

@@ -41,15 +41,15 @@ test("the office creates and publishes a meeting, books for a parent, and prints
   await expect(page.getByText("Published. Share the parent link")).toBeVisible();
   await expect(page.getByLabel("Parent link")).toHaveValue(/\/m\/ptm-/);
 
-  await page.getByRole("link", { name: "Book for a child" }).first().click();
-  await page.getByLabel("Child", { exact: true }).selectOption({ label: "Zoya Khan (Nursery A)" });
+  await page.getByRole("link", { name: /free — book or block/ }).first().click();
+  await page.getByLabel("Book for a child").selectOption({ label: "Zoya Khan (Nursery A)" });
   await page.getByRole("button", { name: "Book this time" }).click();
   await expect(page.getByText(/Booked\. Ref/)).toBeVisible();
   await expect(page.getByRole("link", { name: "Zoya Khan" }).first()).toBeVisible();
   await expectNoSidewaysScroll(page);
 
-  // Blocking that booked slot needs a second, explicit step that names the family.
-  await page.getByRole("row", { name: /Zoya Khan/ }).getByRole("button", { name: "Cancel" }).click();
+  // The office can cancel a booking straight from the list.
+  await page.getByRole("listitem").filter({ hasText: "Zoya Khan" }).getByRole("button", { name: "Cancel" }).click();
   await expect(page.getByText("Booking cancelled")).toBeVisible();
 
   await page.getByRole("link", { name: "Print sheets" }).click();

@@ -153,7 +153,7 @@ async function Settings({ searchParams }: Pick<PageProps<"/admin/settings">, "se
       <Panel title="Booking rules" className="mb-4">
         <form action={saveBookingRulesAction} className="space-y-4">
           <div>
-            <label className="flex items-start gap-2 font-bold">
+            <label className="flex min-h-11 items-start gap-2 py-1 font-bold">
               <input
                 type="checkbox"
                 name="requireAdmissionNo"

@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "../theme/tokens.css";
 
+/* Phones held sideways (or very short windows): tighten tall headers. */
+@custom-variant short (@media (max-height: 500px));
+
 @theme inline {
   --font-sans: var(--font-body), ui-rounded, "Segoe UI", system-ui, sans-serif;
   --font-display: var(--font-display), ui-rounded, "Segoe UI", system-ui, sans-serif;
@@ -72,6 +75,96 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  color-scheme: light;
+  /* Anchored jumps and keyboard scrolling stop short of the screen edges. */
+  scroll-padding-block: 1.5rem;
+}
+
+/* Notched phones (viewport-fit=cover): keep content clear of rounded corners
+   and the camera cut-out when held sideways. Backgrounds still run edge to edge. */
+.safe-x {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom {
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+}
+
+/* A focused field never ends up flush against the keyboard or the top edge. */
+input,
+select,
+textarea {
+  scroll-margin-block: 6rem;
+  min-width: 0;
+}
+
+/* Bigger tick boxes on touch screens (their labels are tappable too). */
+@media (pointer: coarse) {
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+/* iOS Safari draws date/time fields with their own size and centred text;
+   make them behave like the other fields. */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+}
+input::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+/* Tables that turn into one card per row on phones. Put data-label on each
+   cell to show its column name inside the card. */
+@media (max-width: 639.98px) {
+  .stack-table,
+  .stack-table tbody,
+  .stack-table tr,
+  .stack-table td:not(.hidden) {
+    display: block;
+    width: 100%;
+  }
+  .stack-table thead {
+    /* Visually hidden (each card shows its own labels) but kept for screen readers. */
+    display: block;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .stack-table tr {
+    border: 2px solid var(--line);
+    border-radius: 1rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .stack-table td {
+    padding: 0.15rem 0;
+    border: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .stack-table td[data-label]::before {
+    content: attr(data-label) " ";
+    display: inline-block;
+    min-width: 4.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--navy-soft);
+  }
 }
 
 body {
@@ -105,6 +198,11 @@ h1, h2, h3, .font-display {
     transform: translateY(3px);
     box-shadow: 0 1px 0 0 var(--sticker-edge, var(--line));
   }
+}
+
+dialog {
+  /* Sheets stay above an on-screen keyboard where the browser only shrinks the visual viewport. */
+  margin-bottom: var(--keyboard-inset, 0px);
 }
 
 dialog::backdrop {

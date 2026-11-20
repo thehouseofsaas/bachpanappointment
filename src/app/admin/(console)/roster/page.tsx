@@ -144,7 +144,7 @@ async function Roster({ searchParams }: Pick<PageProps<"/admin/roster">, "search
 
       <Panel className="mb-4">
         <details open={one(sp.add) === "1"}>
-          <summary className="cursor-pointer text-xl font-extrabold">Add a student</summary>
+          <summary className="flex min-h-11 cursor-pointer items-center text-xl font-extrabold">Add a student</summary>
           {activeClasses.length === 0 ? (
             <p className="mt-3">
               There are no classes yet. <Link href="/admin/classes">Add a class</Link> first.
@@ -238,7 +238,7 @@ async function Roster({ searchParams }: Pick<PageProps<"/admin/roster">, "search
                         ) : (
                           <ul>
                             {r.phones.map((p) => (
-                              <li key={p.phone} className="whitespace-nowrap">
+                              <li key={p.phone} className="sm:whitespace-nowrap">
                                 {formatPhone(p.phone)}
                                 {p.label ? <span className="text-muted"> ({p.label})</span> : null}
                               </li>

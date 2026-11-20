@@ -6,7 +6,20 @@ const MARK = { w: 440, h: 375 }; // source pixels
 const WORD = { w: 1042, h: 149 };
 
 /** Logo mark only, `width` px wide. Decorative unless `alt` is given. */
-export function LogoMark({ width, alt = "", className = "", priority = false }: { width: number; alt?: string; className?: string; priority?: boolean }) {
+export function LogoMark({
+  width,
+  alt = "",
+  className = "",
+  imgClassName,
+  priority = false,
+}: {
+  width: number;
+  alt?: string;
+  className?: string;
+  /** Size the image with classes instead (e.g. to shrink it on short screens). */
+  imgClassName?: string;
+  priority?: boolean;
+}) {
   return (
     <picture className={`block shrink-0 ${className}`}>
       <source srcSet="/brand/bachpan-mark.webp" type="image/webp" />
@@ -17,15 +30,27 @@ export function LogoMark({ width, alt = "", className = "", priority = false }: 
         height={Math.round((width * MARK.h) / MARK.w)}
         alt={alt}
         fetchPriority={priority ? "high" : undefined}
-        className="block h-auto"
-        style={{ width }}
+        className={`block h-auto ${imgClassName ?? ""}`}
+        style={imgClassName ? undefined : { width }}
       />
     </picture>
   );
 }
 
 /** Wordmark only, `width` px wide. */
-export function LogoWordmark({ width, alt = "", className = "", priority = false }: { width: number; alt?: string; className?: string; priority?: boolean }) {
+export function LogoWordmark({
+  width,
+  alt = "",
+  className = "",
+  imgClassName,
+  priority = false,
+}: {
+  width: number;
+  alt?: string;
+  className?: string;
+  imgClassName?: string;
+  priority?: boolean;
+}) {
   return (
     <picture className={`block shrink-0 ${className}`}>
       <source srcSet="/brand/bachpan-wordmark.webp" type="image/webp" />
@@ -36,8 +61,8 @@ export function LogoWordmark({ width, alt = "", className = "", priority = false
         height={Math.round((width * WORD.h) / WORD.w)}
         alt={alt}
         fetchPriority={priority ? "high" : undefined}
-        className="block h-auto"
-        style={{ width }}
+        className={`block h-auto ${imgClassName ?? ""}`}
+        style={imgClassName ? undefined : { width }}
       />
     </picture>
   );

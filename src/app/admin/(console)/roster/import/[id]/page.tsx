@@ -62,7 +62,7 @@ function RowNotes({ row }: { row: PreviewRow }) {
 function RowsTable({ rows }: { rows: PreviewRow[] }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-sm">
+      <table className="stack-table w-full border-collapse text-sm">
         <thead>
           <tr className="border-b-2 border-line">
             <th className={th}>Row</th>
@@ -74,15 +74,15 @@ function RowsTable({ rows }: { rows: PreviewRow[] }) {
         <tbody>
           {rows.map((r) => (
             <tr key={r.rowNumber} className="border-b border-line last:border-0">
-              <td className={`${td} text-muted`}>{r.rowNumber}</td>
+              <td data-label="Row" className={`${td} text-muted`}>{r.rowNumber}</td>
               <td className={`${td} sm:min-w-32`}>
-                <div className="font-bold">{r.name}</div>
+                <div className="font-bold break-words">{r.name}</div>
                 <div className="text-muted">{r.classLabel || "no class"}</div>
                 <div className="mt-1 sm:hidden">
                   <RowNotes row={r} />
                 </div>
               </td>
-              <td className={td}>
+              <td data-label="Result" className={td}>
                 <Pill tone={ACTION[r.action].tone} className="whitespace-nowrap">
                   {ACTION[r.action].text}
                 </Pill>
@@ -328,7 +328,7 @@ async function Preview({ params, searchParams }: PageProps<"/admin/roster/import
         )}
         {quiet.length > 0 ? (
           <details className="mt-3 border-t-2 border-line pt-3">
-            <summary className="cursor-pointer font-bold">
+            <summary className="flex min-h-11 cursor-pointer items-center font-bold">
               {plural(quiet.length, "row", "rows")} with no change — show
             </summary>
             <div className="mt-2">

@@ -202,7 +202,7 @@ async function Student({ params, searchParams }: PageProps<"/admin/roster/[id]">
           <p className="text-muted">No bookings yet.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-sm">
+            <table className="stack-table w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b-2 border-line">
                   <th className={th}>Meeting</th>
@@ -217,19 +217,19 @@ async function Student({ params, searchParams }: PageProps<"/admin/roster/[id]">
                   const st = bookingStatus(b);
                   return (
                     <tr key={b.id} className="border-b border-line last:border-0">
-                      <td className={td}>{b.title}</td>
-                      <td className={`${td} whitespace-nowrap`}>{formatDayTime(new Date(b.starts_at))}</td>
-                      <td className={`${td} whitespace-nowrap`}>{b.teacher}</td>
-                      <td className={td}>
+                      <td className={`${td} font-bold`}>{b.title}</td>
+                      <td data-label="Time" className={`${td} whitespace-nowrap`}>{formatDayTime(new Date(b.starts_at))}</td>
+                      <td data-label="Teacher" className={`${td} whitespace-nowrap`}>{b.teacher}</td>
+                      <td data-label="Status" className={td}>
                         <Pill tone={st.tone} className="whitespace-nowrap">
                           {st.text}
                         </Pill>
                         {b.status === "cancelled" && b.cancel_reason ? (
-                          <div className="mt-1 min-w-40 text-muted">{b.cancel_reason}</div>
+                          <div className="mt-1 text-muted sm:min-w-40">{b.cancel_reason}</div>
                         ) : null}
                         {b.status === "booked" && b.source === "admin" ? <div className="mt-1 text-muted">Booked by the office</div> : null}
                       </td>
-                      <td className={`${td} whitespace-nowrap font-mono`}>{b.ref_code}</td>
+                      <td data-label="Ref" className={`${td} whitespace-nowrap font-mono`}>{b.ref_code}</td>
                     </tr>
                   );
                 })}

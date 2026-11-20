@@ -263,7 +263,7 @@ async function Classes({ searchParams }: Pick<PageProps<"/admin/classes">, "sear
                           id={`link-${t.id}`}
                           readOnly
                           value={url}
-                          className={`${adminInput} min-w-0 flex-1 basis-64 bg-wash! font-mono text-sm!`}
+                          className={`${adminInput} min-w-0 flex-1 basis-64 bg-wash! font-mono text-base!`}
                         />
                         <CopyButton text={url} label="Copy link" />
                         <AnchorButton

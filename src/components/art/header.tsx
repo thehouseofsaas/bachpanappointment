@@ -103,14 +103,19 @@ export function HeaderSky({ compact = false, className }: WideProps & { compact?
       focusable="false"
     >
       <path d={`M-1170-900H1560V${edge}${WAVE.repeat(7)}z`} fill={C.wash} />
-      <StarShape x={36} y={compact ? 34 : 44} R={compact ? 6 : 8} outline={false} />
-      <StarShape x={compact ? 74 : 70} y={compact ? 92 : 128} R={5} fill={C.coral} outline={false} />
-      <StarShape x={compact ? 318 : 322} y={compact ? 100 : 136} R={6} fill={C.grape} outline={false} />
-      {compact ? null : <StarShape x={92} y={210} R={4} fill={C.leaf} outline={false} />}
-      {compact ? null : <StarShape x={300} y={52} R={4} fill={C.sky} outline={false} />}
+      {/* Stars and clouds step aside on short screens (phone held sideways), where the logo is small. */}
+      <g className="short:hidden">
+        <StarShape x={36} y={compact ? 34 : 44} R={compact ? 6 : 8} outline={false} />
+        <StarShape x={compact ? 74 : 70} y={compact ? 92 : 128} R={5} fill={C.coral} outline={false} />
+        <StarShape x={compact ? 318 : 322} y={compact ? 100 : 136} R={6} fill={C.grape} outline={false} />
+        {compact ? null : <StarShape x={92} y={210} R={4} fill={C.leaf} outline={false} />}
+        {compact ? null : <StarShape x={300} y={52} R={4} fill={C.sky} outline={false} />}
+      </g>
       <SunShape x={compact ? 356 : 350} y={compact ? 30 : 38} s={compact ? 0.95 : 1.3} />
-      <CloudShape x={compact ? 40 : 40} y={edge + 2} s={compact ? 0.85 : 1.1} mood="smile" />
-      <CloudShape x={compact ? 350 : 352} y={edge - 2} s={compact ? 0.8 : 1} flip mood="smile" />
+      <g className="short:hidden">
+        <CloudShape x={compact ? 40 : 40} y={edge + 2} s={compact ? 0.85 : 1.1} mood="smile" />
+        <CloudShape x={compact ? 350 : 352} y={edge - 2} s={compact ? 0.8 : 1} flip mood="smile" />
+      </g>
     </svg>
   );
 }

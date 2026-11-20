@@ -9,7 +9,7 @@ import { t } from "@/lib/strings";
 export function PhoneForm({ askAdmissionNo }: { askAdmissionNo: boolean }) {
   const [state, action, pending] = useActionState<SignInState, FormData>(signIn, {});
   return (
-    <form action={action} className="space-y-4" noValidate>
+    <form action={action} className="space-y-4" noValidate data-keep-visible>
       {state.error ? (
         <Notice kind="bad" role="alert">
           {state.error}
@@ -29,6 +29,7 @@ export function PhoneForm({ askAdmissionNo }: { askAdmissionNo: boolean }) {
             type="tel"
             inputMode="tel"
             autoComplete="tel"
+            enterKeyHint="go"
             required
             maxLength={20}
             defaultValue={state.phone ?? ""}
@@ -46,6 +47,7 @@ export function PhoneForm({ askAdmissionNo }: { askAdmissionNo: boolean }) {
             type="text"
             autoComplete="off"
             autoCapitalize="characters"
+            enterKeyHint="go"
             required
             maxLength={30}
             aria-describedby="admissionNo-hint"

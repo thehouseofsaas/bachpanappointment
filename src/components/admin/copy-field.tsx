@@ -14,7 +14,7 @@ export function CopyField({ value, label, multiline = false }: { value: string; 
       /* the text stays selectable for manual copying */
     }
   };
-  const cls = "block w-full rounded-xl border-2 border-line bg-wash px-3 py-2 text-sm text-navy";
+  const cls = "block w-full min-w-0 rounded-xl border-2 border-line bg-wash px-3 py-2 text-base text-navy";
   return (
     <div>
       <p className="mb-1 text-sm font-bold">{label}</p>
