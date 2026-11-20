@@ -1,0 +1,73 @@
+/* Pre-school theme tokens. Every rainbow colour comes in three weights:
+   base  – fills, borders, decoration
+   soft  – tinted surfaces
+   ink   – text on white or on the soft tint (WCAG AA, checked in tests) */
+:root {
+  --cream: #fff9ec;
+  --paper: #ffffff;
+  --sky-wash: #eaf6ff;
+  --navy: #1f2a52;
+  --navy-soft: #4c5680;
+  --line: #e7e0cf;
+
+  --coral: #ff5c6c;
+  --coral-soft: #ffe5e8;
+  --coral-ink: #b4232f;
+
+  --tangerine: #ff9838;
+  --tangerine-soft: #ffecd9;
+  --tangerine-ink: #a14a00;
+
+  --sunshine: #ffcb2f;
+  --sunshine-soft: #fff4cc;
+  --sunshine-ink: #7a5a00;
+  --sunshine-deep: #e6a800;
+
+  --leaf: #3fbf6b;
+  --leaf-soft: #dff6e6;
+  --leaf-ink: #1e7a3f;
+
+  --sky: #35a7ff;
+  --sky-soft: #ddf0ff;
+  --sky-ink: #0b62a8;
+
+  --grape: #8a63f2;
+  --grape-soft: #ebe4ff;
+  --grape-ink: #5b36c4;
+
+  /* Default tone, overridden by [data-tone]. */
+  --tone: var(--sky);
+  --tone-soft: var(--sky-soft);
+  --tone-ink: var(--sky-ink);
+}
+
+[data-tone="coral"] {
+  --tone: var(--coral);
+  --tone-soft: var(--coral-soft);
+  --tone-ink: var(--coral-ink);
+}
+[data-tone="tangerine"] {
+  --tone: var(--tangerine);
+  --tone-soft: var(--tangerine-soft);
+  --tone-ink: var(--tangerine-ink);
+}
+[data-tone="sunshine"] {
+  --tone: var(--sunshine);
+  --tone-soft: var(--sunshine-soft);
+  --tone-ink: var(--sunshine-ink);
+}
+[data-tone="leaf"] {
+  --tone: var(--leaf);
+  --tone-soft: var(--leaf-soft);
+  --tone-ink: var(--leaf-ink);
+}
+[data-tone="sky"] {
+  --tone: var(--sky);
+  --tone-soft: var(--sky-soft);
+  --tone-ink: var(--sky-ink);
+}
+[data-tone="grape"] {
+  --tone: var(--grape);
+  --tone-soft: var(--grape-soft);
+  --tone-ink: var(--grape-ink);
+}

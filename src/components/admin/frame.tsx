@@ -1,0 +1,128 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { signOutAdmin } from "@/app/admin/(auth)/actions";
+import { Notice } from "@/components/ui/bits";
+import type { CurrentAdmin } from "@/lib/authz";
+
+const NAV: Array<[string, string]> = [
+  ["/admin", "Dashboard"],
+  ["/admin/meetings", "Meetings"],
+  ["/admin/roster", "Students"],
+  ["/admin/classes", "Classes & teachers"],
+  ["/admin/roster/import", "Upload roster"],
+  ["/admin/settings", "Settings"],
+  ["/admin/audit", "Activity log"],
+];
+
+/** Calm frame for the office: same colours and fonts as the parent pages, less decoration. */
+export function AdminFrame({
+  admin,
+  title,
+  current,
+  back,
+  actions,
+  children,
+}: {
+  admin: CurrentAdmin;
+  title: string;
+  /** The nav entry to highlight, e.g. "/admin/meetings". */
+  current: string;
+  back?: { href: string; label: string };
+  actions?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div className="min-h-dvh bg-paper">
+      <header className="no-print border-b-2 border-line bg-wash">
+        <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-2">
+          <Link href="/admin" className="font-display text-lg font-extrabold no-underline">
+            <span aria-hidden="true">🌈</span> PTM office
+          </Link>
+          <span className="ml-auto text-sm text-muted">{admin.name}</span>
+          <form action={signOutAdmin}>
+            <button type="submit" className="cursor-pointer text-sm font-bold underline underline-offset-4">
+              Sign out
+            </button>
+          </form>
+        </div>
+        <nav aria-label="Admin" className="mx-auto max-w-5xl overflow-x-auto px-2">
+          <ul className="flex gap-1 whitespace-nowrap">
+            {NAV.map(([href, label]) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  aria-current={current === href ? "page" : undefined}
+                  className={`block rounded-t-xl px-3 py-2 text-sm font-bold no-underline ${
+                    current === href ? "bg-paper text-navy" : "text-muted hover:text-navy"
+                  }`}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </header>
+      <main className="mx-auto max-w-5xl px-4 py-5">
+        {back ? (
+          <p className="no-print mb-1 text-sm">
+            <Link href={back.href} className="font-bold text-muted">
+              ← {back.label}
+            </Link>
+          </p>
+        ) : null}
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-extrabold">{title}</h1>
+          {actions ? <div className="no-print ml-auto flex flex-wrap gap-2">{actions}</div> : null}
+        </div>
+        {children}
+      </main>
+    </div>
+  );
+}
+
+/** Shows the ?ok= / ?error= message left by the previous action. */
+export function Flash({ ok, error }: { ok?: string | string[]; error?: string | string[] }) {
+  const one = (v?: string | string[]) => (Array.isArray(v) ? v[0] : v);
+  const o = one(ok);
+  const e = one(error);
+  if (!o && !e) return null;
+  return (
+    <div className="no-print mb-4 space-y-2">
+      {e ? (
+        <Notice kind="bad" role="alert">
+          {e}
+        </Notice>
+      ) : null}
+      {o ? (
+        <Notice kind="good" role="status">
+          {o}
+        </Notice>
+      ) : null}
+    </div>
+  );
+}
+
+export function AdminLoading() {
+  return (
+    <div className="grid min-h-dvh place-items-center bg-paper" role="status">
+      <p className="font-display text-lg font-bold text-muted">Loading…</p>
+    </div>
+  );
+}
+
+/** A plain white panel. */
+export function Panel({ title, children, className = "" }: { title?: string; children: ReactNode; className?: string }) {
+  return (
+    <section className={`rounded-2xl border-2 border-line bg-paper p-4 ${className}`}>
+      {title ? <h2 className="mb-3 text-xl font-extrabold">{title}</h2> : null}
+      {children}
+    </section>
+  );
+}
+
+export const adminInput =
+  "block w-full min-h-11 rounded-xl border-2 border-line bg-paper px-3 text-base text-navy focus:border-grape focus:outline-none";
+export const adminLabel = "mb-1 block text-sm font-bold";
+export const th = "px-2 py-2 text-left text-xs font-bold tracking-wide text-muted uppercase";
+export const td = "px-2 py-2 align-top";
