@@ -73,18 +73,28 @@ pnpm lint
 
 ## Put it online (Vercel + Neon)
 
-1. Create a Postgres database at Neon (region: Singapore). Copy the **pooled** connection string.
-2. Import this repository into Vercel. Set these environment variables:
-   - `DATABASE_URL` – the pooled connection string
-   - `SESSION_SECRET` – a long random string (`openssl rand -base64 48`). Changing it signs everyone out and replaces every teacher link.
-   - `SETUP_TOKEN` – any private phrase; needed once to create the first admin
-3. Set the Vercel **Build Command** to `pnpm db:migrate && pnpm build` so the database is updated on every deploy.
-4. Open `/admin/setup`, enter the setup phrase and create the owner account. The page stops working once an admin exists.
+Vercel builds straight from GitHub. Every deploy first brings the database up to date (`pnpm db:migrate && pnpm build`, set in `vercel.json`), so there is nothing to run by hand.
 
-Vercel's free Hobby plan is for non-commercial use; a school will normally need the Pro plan.
-The same code runs on a small server with Docker instead: see `Dockerfile` (run `pnpm db:migrate` against the database before starting a new version).
+1. **Make two private values** (keep them out of chats and email). In a terminal with Node:
+   - `SESSION_SECRET`: `node -e "console.log(require('crypto').randomBytes(36).toString('base64url'))"`
+   - `SETUP_TOKEN`: any private phrase, used once to create the first admin.
+2. **Import:** vercel.com → Add New → Project → import this repository. If the private repo isn't listed, choose "Adjust GitHub App Permissions" and give Vercel access to it.
+3. **Configure:** leave the framework (Next.js) and build command as detected. Under *Environment Variables* add `SESSION_SECRET` and `SETUP_TOKEN`, then **Deploy**. The first deploy builds without a database, so pages show "Something went wrong" until step 4.
+4. **Database:** open the project → *Storage* → *Create Database* → **Neon** (Free) → region **Singapore (aws-ap-southeast-1)** → connect it to the project for all environments. This adds `DATABASE_URL` and `DATABASE_URL_UNPOOLED`.
+5. **Redeploy:** *Deployments* → latest → *Redeploy*. The build log should show `Applied: 0001_init.sql`.
+6. **First admin:** open `https://<your-project>.vercel.app/admin/setup`, enter the setup phrase and create the owner account. The page stops working once an admin exists.
+7. **Start using it:** Upload roster (the template is on that page) → check *Classes & teachers* → *New meeting* → *Publish* → share the parent link.
 
-Forgotten the owner password? With `DATABASE_URL` set in `.env.local`:
+After that, every push to `main` redeploys automatically.
+
+- Vercel's free Hobby plan is for non-commercial use; a school will normally need the Pro plan. Neon's free plan is plenty for one school.
+- After a quiet spell the free database sleeps; the first page load then takes about a second.
+- Changing `SESSION_SECRET` signs everyone out and replaces every teacher link.
+- The demo data (`pnpm db:seed`) only ever goes into a local database, never the live one.
+
+The same code also runs on a small server with Docker: see `Dockerfile`. Run `pnpm db:migrate` against the database before starting each new version.
+
+Forgotten the owner password? With the live `DATABASE_URL` in `.env.local`:
 
 ```bash
 pnpm admin:create office "a-new-long-password"
