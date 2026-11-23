@@ -6,6 +6,7 @@ import { sql } from "drizzle-orm";
 import { Logo } from "@/components/brand";
 import { LoginForm } from "@/components/admin/auth-forms";
 import { AdminLoading, Flash } from "@/components/admin/frame";
+import { DeveloperCredit } from "@/components/credit";
 import { getDb } from "@/db/client";
 import { currentAdmin } from "@/lib/authz";
 
@@ -25,7 +26,7 @@ async function Login({ searchParams }: Pick<PageProps<"/admin/login">, "searchPa
   const n = await getDb().execute<{ n: number }>(sql`select count(*)::int as n from admin_users`);
   const firstRun = n.rows[0].n === 0;
   return (
-    <main className="grid min-h-dvh place-items-center bg-wash px-4 py-8">
+    <main className="grid min-h-dvh content-center justify-items-center gap-6 bg-wash px-4 py-8">
       <div className="w-full max-w-sm rounded-card border-2 border-line bg-paper p-6 sticker">
         <div className="mb-4 flex justify-center">
           <Logo width={180} gap={14} label="Bachpan" priority />
@@ -47,6 +48,7 @@ async function Login({ searchParams }: Pick<PageProps<"/admin/login">, "searchPa
           Parents book at the <Link href="/">front page</Link>.
         </p>
       </div>
+      <DeveloperCredit />
     </main>
   );
 }

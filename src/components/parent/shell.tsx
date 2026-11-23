@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Doodles, WavyDivider } from "@/components/art";
+import { DeveloperCredit } from "@/components/credit";
 import { BrandHeader } from "@/components/parent/brand-header";
 import { AnchorButton } from "@/components/ui/button";
 import { formatPhone, waNumber } from "@/domain/phone";
@@ -47,6 +48,7 @@ export function ParentShell({
           {settings.officePhone ? `School office: ${formatPhone(settings.officePhone)} · ` : ""}
           {t.my.indiaTime}
         </p>
+        <DeveloperCredit className="mt-2" />
       </footer>
     </div>
   );

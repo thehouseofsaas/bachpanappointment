@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { OopsArt, Tick } from "@/components/art";
 import { LogoMark } from "@/components/brand";
 import { PrintButton } from "@/components/admin/copy-field";
+import { DeveloperCredit } from "@/components/credit";
 import { Card, Notice, Pill } from "@/components/ui/bits";
 import { PageLoading } from "@/components/ui/page-loading";
 import { getDb } from "@/db/client";
@@ -81,6 +82,7 @@ async function Schedule({ params }: Pick<PageProps<"/t/[link]">, "params">) {
         {sessions.map((s) => (
           <SessionCard key={s.sessionId} s={s} link={link} teacherName={teacher.name} />
         ))}
+        <DeveloperCredit className="pt-5" />
       </main>
     </div>
   );

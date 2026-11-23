@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { signOutAdmin } from "@/app/admin/(auth)/actions";
 import { LogoMark } from "@/components/brand";
+import { DeveloperCredit } from "@/components/credit";
 import { Notice } from "@/components/ui/bits";
 import type { CurrentAdmin } from "@/lib/authz";
 
@@ -108,6 +109,7 @@ export function AdminFrame({
           {actions ? <div className="no-print ml-auto flex flex-wrap gap-2">{actions}</div> : null}
         </div>
         {children}
+        <DeveloperCredit className="mt-10" />
       </main>
     </div>
   );
